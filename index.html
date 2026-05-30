@@ -13,23 +13,17 @@
     padding: 20px 16px;
   }
   .container { max-width: 480px; margin: 0 auto; }
-  .header { text-align: center; color: white; margin-bottom: 24px; }
+  
+  /* 头部 */
+  .header {
+    text-align: center;
+    color: white;
+    margin-bottom: 24px;
+  }
   .header h1 { font-size: 26px; margin-bottom: 6px; }
   .header p { font-size: 14px; opacity: 0.9; }
   
-  .stats-bar {
-    display: flex;
-    justify-content: space-between;
-    padding: 14px 16px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 12px;
-    margin-bottom: 16px;
-    color: white;
-  }
-  .stat-item { text-align: center; }
-  .stat-item .num { font-size: 22px; font-weight: 700; }
-  .stat-item .label { font-size: 11px; opacity: 0.85; }
-  
+  /* 搜索区域 */
   .search-box {
     background: white;
     border-radius: 16px;
@@ -67,9 +61,12 @@
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
   }
   .search-btn:active { transform: scale(0.96); }
+  .search-btn:disabled { opacity: 0.6; cursor: not-allowed; }
   
+  /* 结果区域 */
   .result-box {
     background: white;
     border-radius: 16px;
@@ -80,12 +77,17 @@
   .result-box.show { display: block; animation: fadeIn 0.3s ease; }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
   
+  /* 家长信息 */
   .parent-info {
     padding-bottom: 16px;
     border-bottom: 1px dashed #e0e0e0;
     margin-bottom: 16px;
   }
-  .parent-info h2 { font-size: 20px; color: #333; margin-bottom: 8px; }
+  .parent-info h2 {
+    font-size: 20px;
+    color: #333;
+    margin-bottom: 8px;
+  }
   .parent-meta {
     display: flex;
     flex-wrap: wrap;
@@ -99,6 +101,7 @@
     border-radius: 20px;
   }
   
+  /* 孩子卡片 */
   .child-card {
     border: 2px solid #f0f0f0;
     border-radius: 14px;
@@ -143,8 +146,16 @@
   .child-avatar.boy { background: #e3f2fd; color: #1976d2; }
   .child-avatar.girl { background: #fce4ec; color: #c2185b; }
   .child-avatar.unknown { background: #f5f5f5; color: #666; }
-  .child-name { font-size: 18px; font-weight: 700; color: #333; }
-  .child-raw { font-size: 12px; color: #999; margin-top: 2px; }
+  .child-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+  }
+  .child-raw {
+    font-size: 12px;
+    color: #999;
+    margin-top: 2px;
+  }
   
   .child-details {
     display: grid;
@@ -158,10 +169,19 @@
     background: #fafafa;
     border-radius: 10px;
   }
-  .detail-item .label { font-size: 11px; color: #999; margin-bottom: 4px; }
-  .detail-item .value { font-size: 16px; font-weight: 700; color: #333; }
+  .detail-item .label {
+    font-size: 11px;
+    color: #999;
+    margin-bottom: 4px;
+  }
+  .detail-item .value {
+    font-size: 16px;
+    font-weight: 700;
+    color: #333;
+  }
   .detail-item .value.size { color: #e53935; font-size: 20px; }
   
+  /* 领取按钮 */
   .receive-btn {
     width: 100%;
     padding: 14px;
@@ -188,46 +208,29 @@
     cursor: default;
   }
   
-  .admin-section {
-    background: white;
-    border-radius: 16px;
-    padding: 20px;
-    margin-top: 16px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
-  }
-  .admin-section h3 {
-    font-size: 16px;
-    color: #333;
-    margin-bottom: 12px;
-  }
-  .admin-btn {
-    width: 100%;
-    padding: 12px;
-    border: none;
-    border-radius: 10px;
-    font-size: 14px;
-    cursor: pointer;
-    margin-bottom: 8px;
-  }
-  .admin-btn.primary {
+  /* 统计栏 */
+  .stats-bar {
+    display: flex;
+    justify-content: space-between;
+    padding: 14px 16px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    margin-bottom: 16px;
     color: white;
   }
-  .admin-btn.secondary {
-    background: #f5f5f5;
-    color: #333;
-  }
+  .stat-item { text-align: center; }
+  .stat-item .num { font-size: 22px; font-weight: 700; }
+  .stat-item .label { font-size: 11px; opacity: 0.85; }
   
-  .reset-link {
+  /* 空状态 */
+  .empty-state {
     text-align: center;
-    margin-top: 16px;
-    font-size: 13px;
+    padding: 40px 20px;
     color: #999;
-    cursor: pointer;
-    text-decoration: underline;
   }
-  .reset-link:hover { color: #667eea; }
+  .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
   
+  /* 底部 */
   .footer {
     text-align: center;
     color: rgba(255,255,255,0.6);
@@ -236,6 +239,7 @@
     padding-bottom: 20px;
   }
   
+  /* 提示消息 */
   .toast {
     position: fixed;
     top: 20px;
@@ -252,43 +256,16 @@
   }
   .toast.show { transform: translateX(-50%) translateY(0); }
   
-  .modal-overlay {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.5);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 2000;
-  }
-  .modal-overlay.show { display: flex; }
-  .modal {
-    background: white;
-    border-radius: 16px;
-    padding: 20px;
-    max-width: 90%;
-    max-height: 80vh;
-    overflow: auto;
-    width: 400px;
-  }
-  .modal h3 { margin-bottom: 12px; }
-  .modal pre {
-    background: #f5f5f5;
-    padding: 10px;
-    border-radius: 8px;
-    font-size: 12px;
-    overflow: auto;
-    max-height: 200px;
-  }
-  .modal-close {
-    margin-top: 12px;
-    padding: 10px 20px;
-    background: #667eea;
-    color: white;
-    border: none;
-    border-radius: 8px;
+  /* 重置按钮 */
+  .reset-link {
+    text-align: center;
+    margin-top: 16px;
+    font-size: 13px;
+    color: #999;
     cursor: pointer;
+    text-decoration: underline;
   }
+  .reset-link:hover { color: #667eea; }
 </style>
 </head>
 <body>
@@ -298,6 +275,7 @@
     <p>输入报名手机号，领取活动物资</p>
   </div>
   
+  <!-- 统计栏 -->
   <div class="stats-bar">
     <div class="stat-item">
       <div class="num" id="statTotal">0</div>
@@ -313,24 +291,19 @@
     </div>
   </div>
   
+  <!-- 搜索 -->
   <div class="search-box">
     <label>📱 请输入报名手机号</label>
     <div class="search-input-wrap">
-      <input type="tel" class="search-input" id="phoneInput" placeholder="例如: 18301443350" maxlength="11">
+      <input type="tel" class="search-input" id="phoneInput" placeholder="例如: 13800138000" maxlength="11">
       <button class="search-btn" id="searchBtn" onclick="searchPhone()">查询</button>
     </div>
   </div>
   
+  <!-- 结果 -->
   <div class="result-box" id="resultBox">
     <div id="resultContent"></div>
     <div class="reset-link" onclick="resetSearch()">← 查询其他手机号</div>
-  </div>
-  
-  <div class="admin-section">
-    <h3>🔧 工作人员功能</h3>
-    <button class="admin-btn primary" onclick="exportData()">📥 导出领取记录</button>
-    <button class="admin-btn secondary" onclick="showStats()">📊 查看统计</button>
-    <button class="admin-btn secondary" onclick="clearAllData()">🗑️ 清空所有数据</button>
   </div>
   
   <div class="footer">
@@ -338,18 +311,11 @@
   </div>
 </div>
 
+<!-- Toast -->
 <div class="toast" id="toast"></div>
 
-<div class="modal-overlay" id="modalOverlay">
-  <div class="modal">
-    <h3 id="modalTitle">标题</h3>
-    <pre id="modalContent">内容</pre>
-    <button class="modal-close" onclick="closeModal()">关闭</button>
-  </div>
-</div>
-
 <script>
-// 完整数据
+// ===== 数据 =====
 const registrations = [
   {
     "name": "安柯",
@@ -534,6 +500,23 @@ const registrations = [
     ],
     "remark": "忌口桃子，谢谢",
     "nickname": "VN"
+  },
+  {
+    "name": "邓豪",
+    "grade": "2016精仪博士",
+    "phone": "18823833780",
+    "childCount": "B.2",
+    "children": [
+      {
+        "raw": "甜甜-女-120，涵涵-女-110",
+        "gender": "女",
+        "age": "",
+        "height": "120cm",
+        "name": "甜甜"
+      }
+    ],
+    "remark": "无",
+    "nickname": "DengH"
   },
   {
     "name": "邓豪",
@@ -782,6 +765,47 @@ const registrations = [
     "nickname": "李雪"
   },
   {
+    "name": "李雪",
+    "grade": "2016级清华伯克利学院博士",
+    "phone": "13145859730",
+    "childCount": "B.2",
+    "children": [
+      {
+        "raw": "子川-男-9岁-145cm， 子溪-女-6岁-130cm",
+        "gender": "未知",
+        "age": "9岁",
+        "height": "145cm",
+        "name": "子川"
+      }
+    ],
+    "remark": "无",
+    "nickname": "李雪"
+  },
+  {
+    "name": "李占峰",
+    "grade": "2026专精特新硕士",
+    "phone": "17620357825",
+    "childCount": "B.2",
+    "children": [
+      {
+        "raw": "李彧旗-男-5岁-116cm",
+        "gender": "男",
+        "age": "5岁",
+        "height": "116cm",
+        "name": "李彧旗"
+      },
+      {
+        "raw": "李彧墨-男-8岁-133cm",
+        "gender": "男",
+        "age": "8岁",
+        "height": "133cm",
+        "name": "李彧墨"
+      }
+    ],
+    "remark": "暂无",
+    "nickname": "Zephyr总钻风"
+  },
+  {
     "name": "李占峰",
     "grade": "2025专精特新",
     "phone": "17620357825",
@@ -977,6 +1001,47 @@ const registrations = [
     "nickname": "司知蠢"
   },
   {
+    "name": "司知蠢",
+    "grade": "能源环境老师",
+    "phone": "15002098089",
+    "childCount": "B.2",
+    "children": [
+      {
+        "raw": "珈睿-男-8岁-130cm，珈烨-男-14岁-175cm",
+        "gender": "男",
+        "age": "8岁",
+        "height": "130cm",
+        "name": "珈睿"
+      }
+    ],
+    "remark": "无",
+    "nickname": "lilei "
+  },
+  {
+    "name": "宋孟贵",
+    "grade": "2004级美术学院本",
+    "phone": "15989494999",
+    "childCount": "B.2",
+    "children": [
+      {
+        "raw": "涵涵-男-6岁-125",
+        "gender": "男",
+        "age": "6岁",
+        "height": "125cm",
+        "name": "涵涵"
+      },
+      {
+        "raw": "瑞瑞-男-8岁-135",
+        "gender": "男",
+        "age": "8岁",
+        "height": "135cm",
+        "name": "瑞瑞"
+      }
+    ],
+    "remark": "无",
+    "nickname": "宋孟贵"
+  },
+  {
     "name": "宋孟贵",
     "grade": "2004级美术学院本",
     "phone": "15989494999",
@@ -1052,27 +1117,44 @@ const registrations = [
     "nickname": "孙华锐"
   },
   {
-    "name": "谭杰平",
-    "grade": "2004级法学院法律硕士",
-    "phone": "15914139513",
-    "childCount": "A.1",
-    "children": [
-      {
-        "raw": "宸宸-男-8岁-140cm",
-        "gender": "男",
-        "age": "8岁",
-        "height": "140cm",
-        "name": "宸宸"
-      }
-    ],
-    "remark": "比较喜欢吃西餐",
-    "nickname": "谭杰铭"
-  },
-  {
     "name": "唐铭",
     "grade": "2018级机械工程系硕士",
     "phone": "18665306081",
     "childCount": "A.1",
+    "children": [
+      {
+        "raw": "加加 女 11岁 160cm",
+        "gender": "女",
+        "age": "11岁",
+        "height": "160cm",
+        "name": "加加 女"
+      }
+    ],
+    "remark": "无",
+    "nickname": "ming"
+  },
+  {
+    "name": "唐铭",
+    "grade": "2018级机械工程学院硕士",
+    "phone": "18665306081",
+    "childCount": "A.1",
+    "children": [
+      {
+        "raw": "加加 女 11岁 160cm",
+        "gender": "女",
+        "age": "11岁",
+        "height": "160cm",
+        "name": "加加 女"
+      }
+    ],
+    "remark": "无",
+    "nickname": "ming"
+  },
+  {
+    "name": "唐铭",
+    "grade": "2018级机械工程学院硕士",
+    "phone": "18665306081",
+    "childCount": "B.2",
     "children": [
       {
         "raw": "加加 女 11岁 160cm",
@@ -1108,23 +1190,6 @@ const registrations = [
     ],
     "remark": "无",
     "nickname": "Jan Tu"
-  },
-  {
-    "name": "王倩",
-    "grade": "2013级自动化系硕士",
-    "phone": "18617198559",
-    "childCount": "A.1",
-    "children": [
-      {
-        "raw": "王舒怿-男-5岁-120cm",
-        "gender": "男",
-        "age": "5岁",
-        "height": "120cm",
-        "name": "王舒怿"
-      }
-    ],
-    "remark": "无",
-    "nickname": "玖玖"
   },
   {
     "name": "王思宇",
@@ -1190,23 +1255,6 @@ const registrations = [
     ],
     "remark": "无",
     "nickname": "Ryan吴昊阳 @星奢智能"
-  },
-  {
-    "name": "谢鹏程",
-    "grade": "2009级环境学院本科",
-    "phone": "18923884578",
-    "childCount": "A.1",
-    "children": [
-      {
-        "raw": "谢昕蓓-女-7岁-135cm",
-        "gender": "女",
-        "age": "7岁",
-        "height": "135cm",
-        "name": "谢昕蓓"
-      }
-    ],
-    "remark": "无",
-    "nickname": "谢鹏程Alex"
   },
   {
     "name": "徐健江",
@@ -1299,6 +1347,23 @@ const registrations = [
     ],
     "remark": "无",
     "nickname": "杨瑞东"
+  },
+  {
+    "name": "叶敏华",
+    "grade": "2006级环境学院本科，2010级环境学院硕士",
+    "phone": "18503036128",
+    "childCount": "B.2",
+    "children": [
+      {
+        "raw": "墨青-女-9岁-160cm，墨阳-男-4岁-120cm",
+        "gender": "未知",
+        "age": "9岁",
+        "height": "160cm",
+        "name": "墨青"
+      }
+    ],
+    "remark": "无",
+    "nickname": "hermionemin"
   },
   {
     "name": "尹丽丹",
@@ -1517,58 +1582,10 @@ const registrations = [
     ],
     "remark": "无",
     "nickname": "钧元"
-  },
-  {
-    "name": "郑玲玲",
-    "grade": "2020级生医",
-    "phone": "18665872176",
-    "childCount": "C.3",
-    "children": [
-      {
-        "raw": "涵涵-女-8岁-120cm",
-        "gender": "女",
-        "age": "8岁",
-        "height": "120cm",
-        "name": "涵涵"
-      },
-      {
-        "raw": "琳琳-女-8岁-120cm",
-        "gender": "女",
-        "age": "8岁",
-        "height": "120cm",
-        "name": "琳琳"
-      },
-      {
-        "raw": "铄铄-男-4岁-110cm",
-        "gender": "男",
-        "age": "4岁",
-        "height": "110cm",
-        "name": "铄铄"
-      }
-    ],
-    "remark": "无",
-    "nickname": "郑玲玲｜国康健康长寿顾问^_^"
-  },
-  {
-    "name": "钟素静",
-    "grade": "202501清华金融55班",
-    "phone": "13602667641",
-    "childCount": "A.1",
-    "children": [
-      {
-        "raw": "范杰睿11岁-150",
-        "gender": "未知",
-        "age": "11岁",
-        "height": "150cm",
-        "name": "范杰睿"
-      }
-    ],
-    "remark": "无",
-    "nickname": "Cindy"
   }
-];;
+];
 
-// 状态管理
+// ===== 状态管理 =====
 function getStorageKey() { return 'parent_run_2025_received'; }
 
 function getReceivedState() {
@@ -1590,7 +1607,7 @@ function isChildReceived(phone, childIndex) {
   return state[phone] && state[phone][childIndex] === true;
 }
 
-// 统计
+// ===== 统计 =====
 function updateStats() {
   let totalKids = 0;
   let receivedKids = 0;
@@ -1610,10 +1627,10 @@ function updateStats() {
   document.getElementById('statReceived').textContent = receivedKids;
 }
 
-// 搜索
+// ===== 搜索 =====
 function searchPhone() {
   const input = document.getElementById('phoneInput');
-  const phone = String(input.value.trim());
+  const phone = input.value.trim();
   
   if (!phone) {
     showToast('请输入手机号');
@@ -1624,7 +1641,7 @@ function searchPhone() {
     return;
   }
   
-  const reg = registrations.find(r => String(r.phone) === phone);
+  const reg = registrations.find(r => r.phone === phone);
   if (!reg) {
     showToast('未找到该手机号的报名信息');
     return;
@@ -1647,30 +1664,30 @@ function renderResult(reg) {
     const cardClass = received ? 'received' : '';
     
     childrenHtml += `
-      <div class="child-card ${cardClass}" id="childCard_${idx}">
+      <div class="child-card {cardClass}" id="childCard_{idx}">
         <div class="child-header">
-          <div class="child-avatar ${genderClass}">${genderEmoji}</div>
+          <div class="child-avatar {genderClass}">{genderEmoji}</div>
           <div>
-            <div class="child-name">${child.name}</div>
-            <div class="child-raw">${child.raw}</div>
+            <div class="child-name">{child.name}</div>
+            <div class="child-raw">{child.raw}</div>
           </div>
         </div>
         <div class="child-details">
           <div class="detail-item">
             <div class="label">性别</div>
-            <div class="value">${child.gender}</div>
+            <div class="value">{child.gender}</div>
           </div>
           <div class="detail-item">
             <div class="label">年龄</div>
-            <div class="value">${child.age || '-'}</div>
+            <div class="value">{child.age || '-'}</div>
           </div>
           <div class="detail-item">
             <div class="label">身高/尺码</div>
-            <div class="value size">${child.height || '-'}</div>
+            <div class="value size">{child.height || '-'}</div>
           </div>
         </div>
-        <button class="receive-btn ${btnClass}" id="btn_${idx}" onclick="toggleReceive('${reg.phone}', ${idx})">
-          ${btnText}
+        <button class="receive-btn {btnClass}" id="btn_{idx}" onclick="toggleReceive('{reg.phone}', {idx})">
+          {btnText}
         </button>
       </div>
     `;
@@ -1678,15 +1695,16 @@ function renderResult(reg) {
   
   content.innerHTML = `
     <div class="parent-info">
-      <h2>👤 ${reg.name}</h2>
+      <h2>👤 {reg.name}</h2>
       <div class="parent-meta">
-        <span>📱 ${reg.phone}</span>
-        <span>🎓 ${reg.grade || '未填写'}</span>
-        <span>👶 ${reg.children.length}个孩子</span>
+        <span>📱 {reg.phone}</span>
+        <span>🎓 {reg.grade}</span>
+        <span>👶 {reg.children.length}个孩子</span>
+        {reg.remark && reg.remark !== '无' ? '<span>📝 ' + reg.remark + '</span>' : ''}
       </div>
     </div>
     <div class="children-list">
-      ${childrenHtml}
+      {childrenHtml}
     </div>
   `;
   
@@ -1697,18 +1715,22 @@ function renderResult(reg) {
 function toggleReceive(phone, childIndex) {
   const received = isChildReceived(phone, childIndex);
   if (received) {
+    // 已领取，询问是否取消
     if (!confirm('该孩子已标记为领取，是否取消？')) return;
     setChildReceived(phone, childIndex, false);
   } else {
     setChildReceived(phone, childIndex, true);
     showToast('✓ 领取成功！');
   }
+  
+  // 重新渲染该卡片状态
   refreshCard(phone, childIndex);
 }
 
 function refreshCard(phone, childIndex) {
-  const reg = registrations.find(r => String(r.phone) === String(phone));
+  const reg = registrations.find(r => r.phone === phone);
   if (!reg) return;
+  const child = reg.children[childIndex];
   const received = isChildReceived(phone, childIndex);
   
   const card = document.getElementById('childCard_' + childIndex);
@@ -1739,79 +1761,15 @@ function showToast(msg) {
   setTimeout(() => toast.classList.remove('show'), 2500);
 }
 
-// 导出功能
-function exportData() {
-  const state = getReceivedState();
-  let csv = '家长姓名,手机号,孩子姓名,性别,年龄,身高,领取状态,领取时间
-';
-  
-  registrations.forEach(reg => {
-    reg.children.forEach((child, idx) => {
-      const received = isChildReceived(reg.phone, idx);
-      csv += `${reg.name},${reg.phone},${child.name},${child.gender},${child.age},${child.height},${received ? '已领取' : '未领取'},${received ? new Date().toLocaleString() : ''}
-`;
-    });
-  });
-  
-  const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = '亲子跑领取记录_' + new Date().toLocaleDateString() + '.csv';
-  link.click();
-  
-  showToast('✓ 导出成功！');
-}
-
-function showStats() {
-  const state = getReceivedState();
-  let stats = '=== 领取统计 ===
-
-';
-  let receivedCount = 0;
-  let totalCount = 0;
-  
-  registrations.forEach(reg => {
-    reg.children.forEach((child, idx) => {
-      totalCount++;
-      if (isChildReceived(reg.phone, idx)) {
-        receivedCount++;
-        stats += `✓ ${reg.name} - ${child.name}
-`;
-      }
-    });
-  });
-  
-  stats += `
-总计: ${receivedCount}/${totalCount} 已领取`;
-  stats += `
-完成率: ${((receivedCount/totalCount)*100).toFixed(1)}%`;
-  
-  showModal('领取统计', stats);
-}
-
-function clearAllData() {
-  if (!confirm('确定要清空所有领取记录吗？此操作不可恢复！')) return;
-  localStorage.removeItem(getStorageKey());
-  updateStats();
-  showToast('✓ 已清空所有数据');
-}
-
-function showModal(title, content) {
-  document.getElementById('modalTitle').textContent = title;
-  document.getElementById('modalContent').textContent = content;
-  document.getElementById('modalOverlay').classList.add('show');
-}
-
-function closeModal() {
-  document.getElementById('modalOverlay').classList.remove('show');
-}
-
-// 初始化
+// ===== 初始化 =====
 document.getElementById('phoneInput').addEventListener('keypress', function(e) {
   if (e.key === 'Enter') searchPhone();
 });
 
-updateStats();
+// 页面加载完成后更新统计
+document.addEventListener('DOMContentLoaded', function() {
+  updateStats();
+});
 </script>
 </body>
 </html>
