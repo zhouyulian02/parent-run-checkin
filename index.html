@@ -1359,30 +1359,30 @@ function renderResult(reg) {
     const cardClass = received ? 'received' : '';
     
     childrenHtml += `
-      <div class="child-card {cardClass}" id="childCard_{idx}">
+      <div class="child-card ` + cardClass + `" id="childCard_` + idx + `">
         <div class="child-header">
-          <div class="child-avatar {genderClass}">{genderEmoji}</div>
+          <div class="child-avatar ` + genderClass + `">` + genderEmoji + `</div>
           <div>
-            <div class="child-name">{child.name}</div>
-            <div class="child-raw">{child.raw}</div>
+            <div class="child-name">` + child.name + `</div>
+            <div class="child-raw">` + child.raw + `</div>
           </div>
         </div>
         <div class="child-details">
           <div class="detail-item">
             <div class="label">性别</div>
-            <div class="value">{child.gender}</div>
+            <div class="value">` + child.gender + `</div>
           </div>
           <div class="detail-item">
             <div class="label">年龄</div>
-            <div class="value">{child.age || '-'}</div>
+            <div class="value">` + (child.age || '-') + `</div>
           </div>
           <div class="detail-item">
             <div class="label">身高/尺码</div>
-            <div class="value size">{child.height || '-'}</div>
+            <div class="value size">` + (child.height || '-') + `</div>
           </div>
         </div>
-        <button class="receive-btn {btnClass}" id="btn_{idx}" onclick="toggleReceive('{reg.phone}', {idx})">
-          {btnText}
+        <button class="receive-btn ` + btnClass + `" id="btn_` + idx + `" onclick="toggleReceive('` + reg.phone + `', ` + idx + `)">
+          ` + btnText + `
         </button>
       </div>
     `;
@@ -1390,16 +1390,16 @@ function renderResult(reg) {
   
   content.innerHTML = `
     <div class="parent-info">
-      <h2>👤 {reg.name}</h2>
+      <h2>👤 ` + reg.name + `</h2>
       <div class="parent-meta">
-        <span>📱 {reg.phone}</span>
-        <span>🎓 {reg.grade}</span>
-        <span>👶 {reg.children.length}个孩子</span>
-        {reg.remark && reg.remark !== '无' ? '<span>📝 ' + reg.remark + '</span>' : ''}
+        <span>📱 ` + reg.phone + `</span>
+        <span>🎓 ` + reg.grade + `</span>
+        <span>👶 ` + reg.children.length + `个孩子</span>
+        ` + (reg.remark && reg.remark !== '无' ? '<span>📝 ' + reg.remark + '</span>' : '') + `
       </div>
     </div>
     <div class="children-list">
-      {childrenHtml}
+      ` + childrenHtml + `
     </div>
   `;
   
