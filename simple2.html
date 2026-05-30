@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>签到测试v2</title>
+<style>
+body { font-family: sans-serif; padding: 20px; max-width: 500px; margin: 0 auto; }
+input { width: 100%; padding: 10px; font-size: 16px; margin: 10px 0; }
+button { width: 100%; padding: 12px; font-size: 16px; background: #667eea; color: white; border: none; border-radius: 5px; margin: 5px 0; }
+.result { margin-top: 20px; padding: 15px; background: #f0f0f0; border-radius: 10px; }
+.debug { background: #333; color: #0f0; padding: 10px; font-family: monospace; font-size: 11px; margin-top: 10px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<h1>🏃 签到测试v2</h1>
+<input type="tel" id="phone" placeholder="输入手机号" value="18301443350">
+<button onclick="searchStrict()">严格查询 (===)</button>
+<button onclick="searchLoose()">宽松查询 (==)</button>
+<button onclick="searchString()">字符串查询 (String())</button>
+<div class="debug" id="debug">点击查询按钮测试...</div>
+<div id="result"></div>
+
+<script>
+const registrations = [
+  {"name":"安柯","phone":"18301443350","children":[{"name":"柠檬","gender":"男","age":"3岁","height":"105㎝"}]},
+  {"name":"陈芳","phone":"13510084071","children":[{"name":"一蔓","gender":"女","age":"11岁","height":"145cm"},{"name":"墨墨","gender":"女","age":"11岁","height":"150cm"}]}
+];
+
+function getDebugInfo(phone) {
+  let info = '输入: [' + phone + '] 长度:' + phone.length + '\n';
+  info += 'charCode: ';
+  for (let i = 0; i < phone.length; i++) {
+    info += phone.charCodeAt(i) + ' ';
+  }
+  info += '\n';
+  info += '数据0: [' + registrations[0].phone + ']\n';
+  info += '数据0 charCode: ';
+  for (let i = 0; i < registrations[0].phone.length; i++) {
+    info += registrations[0].phone.charCodeAt(i) + ' ';
+  }
+  info += '\n';
+  return info;
+}
+
+function searchStrict() {
+  const phone = document.getElementById('phone').value.trim();
+  const debug = document.getElementById('debug');
+  let info = '=== 严格查询 (===) ===\n' + getDebugInfo(phone);
+  
+  const reg = registrations.find(r => r.phone === phone);
+  info += '结果: ' + (reg ? '✓ ' + reg.name : '✗ 未找到') + '\n';
+  info += 'phone===data0: ' + (phone === registrations[0].phone) + '\n';
+  info += 'phone==data0: ' + (phone == registrations[0].phone);
+  
+  debug.textContent = info;
+  showResult(reg);
+}
+
+function searchLoose() {
+  const phone = document.getElementById('phone').value.trim();
+  const debug = document.getElementById('debug');
+  let info = '=== 宽松查询 (==) ===\n' + getDebugInfo(phone);
+  
+  const reg = registrations.find(r => r.phone == phone);
+  info += '结果: ' + (reg ? '✓ ' + reg.name : '✗ 未找到');
+  
+  debug.textContent = info;
+  showResult(reg);
+}
+
+function searchString() {
+  const phone = String(document.getElementById('phone').value.trim());
+  const debug = document.getElementById('debug');
+  let info = '=== 字符串查询 ===\n' + getDebugInfo(phone);
+  
+  const reg = registrations.find(r => String(r.phone) === phone);
+  info += '结果: ' + (reg ? '✓ ' + reg.name : '✗ 未找到');
+  
+  debug.textContent = info;
+  showResult(reg);
+}
+
+function showResult(reg) {
+  if (reg) {
+    let html = '<h2>' + reg.name + '</h2>';
+    reg.children.forEach(c => {
+      html += '<div class="result"><b>' + c.name + '</b> ' + c.gender + ' ' + c.age + ' ' + c.height + '</div>';
+    });
+    document.getElementById('result').innerHTML = html;
+  } else {
+    document.getElementById('result').innerHTML = '<div style="color:red">未找到</div>';
+  }
+}
+</script>
+</body>
+</html>
