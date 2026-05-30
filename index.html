@@ -1,0 +1,1772 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>亲子跑活动签到</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px 16px;
+  }
+  .container { max-width: 480px; margin: 0 auto; }
+  
+  /* 头部 */
+  .header {
+    text-align: center;
+    color: white;
+    margin-bottom: 24px;
+  }
+  .header h1 { font-size: 26px; margin-bottom: 6px; }
+  .header p { font-size: 14px; opacity: 0.9; }
+  
+  /* 搜索区域 */
+  .search-box {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  }
+  .search-box label {
+    display: block;
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+  .search-input-wrap {
+    display: flex;
+    gap: 10px;
+  }
+  .search-input {
+    flex: 1;
+    padding: 14px 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .search-input:focus { border-color: #667eea; }
+  .search-btn {
+    padding: 14px 24px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .search-btn:active { transform: scale(0.96); }
+  .search-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  
+  /* 结果区域 */
+  .result-box {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+    display: none;
+  }
+  .result-box.show { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  
+  /* 家长信息 */
+  .parent-info {
+    padding-bottom: 16px;
+    border-bottom: 1px dashed #e0e0e0;
+    margin-bottom: 16px;
+  }
+  .parent-info h2 {
+    font-size: 20px;
+    color: #333;
+    margin-bottom: 8px;
+  }
+  .parent-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 13px;
+    color: #666;
+  }
+  .parent-meta span {
+    background: #f5f5f5;
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+  
+  /* 孩子卡片 */
+  .child-card {
+    border: 2px solid #f0f0f0;
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 14px;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .child-card:last-child { margin-bottom: 0; }
+  .child-card.received { border-color: #4caf50; background: #f8fff8; }
+  .child-card.received::before {
+    content: "✓ 已领取";
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #4caf50;
+    color: white;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+  
+  .child-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .child-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: bold;
+    flex-shrink: 0;
+  }
+  .child-avatar.boy { background: #e3f2fd; color: #1976d2; }
+  .child-avatar.girl { background: #fce4ec; color: #c2185b; }
+  .child-avatar.unknown { background: #f5f5f5; color: #666; }
+  .child-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+  }
+  .child-raw {
+    font-size: 12px;
+    color: #999;
+    margin-top: 2px;
+  }
+  
+  .child-details {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .detail-item {
+    text-align: center;
+    padding: 10px 6px;
+    background: #fafafa;
+    border-radius: 10px;
+  }
+  .detail-item .label {
+    font-size: 11px;
+    color: #999;
+    margin-bottom: 4px;
+  }
+  .detail-item .value {
+    font-size: 16px;
+    font-weight: 700;
+    color: #333;
+  }
+  .detail-item .value.size { color: #e53935; font-size: 20px; }
+  
+  /* 领取按钮 */
+  .receive-btn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .receive-btn:not(.received) {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(238, 90, 36, 0.3);
+  }
+  .receive-btn:not(.received):active { transform: scale(0.98); }
+  .receive-btn.received {
+    background: #e8f5e9;
+    color: #4caf50;
+    cursor: default;
+  }
+  
+  /* 统计栏 */
+  .stats-bar {
+    display: flex;
+    justify-content: space-between;
+    padding: 14px 16px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    margin-bottom: 16px;
+    color: white;
+  }
+  .stat-item { text-align: center; }
+  .stat-item .num { font-size: 22px; font-weight: 700; }
+  .stat-item .label { font-size: 11px; opacity: 0.85; }
+  
+  /* 空状态 */
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #999;
+  }
+  .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+  
+  /* 底部 */
+  .footer {
+    text-align: center;
+    color: rgba(255,255,255,0.6);
+    font-size: 12px;
+    margin-top: 24px;
+    padding-bottom: 20px;
+  }
+  
+  /* 提示消息 */
+  .toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100px);
+    background: #333;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 14px;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  
+  /* 重置按钮 */
+  .reset-link {
+    text-align: center;
+    margin-top: 16px;
+    font-size: 13px;
+    color: #999;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+  .reset-link:hover { color: #667eea; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🏃 亲子跑活动签到</h1>
+    <p>输入报名手机号，领取活动物资</p>
+  </div>
+  
+  <!-- 统计栏 -->
+  <div class="stats-bar">
+    <div class="stat-item">
+      <div class="num" id="statTotal">0</div>
+      <div class="label">总报名</div>
+    </div>
+    <div class="stat-item">
+      <div class="num" id="statKids">0</div>
+      <div class="label">总孩子</div>
+    </div>
+    <div class="stat-item">
+      <div class="num" id="statReceived">0</div>
+      <div class="label">已领取</div>
+    </div>
+  </div>
+  
+  <!-- 搜索 -->
+  <div class="search-box">
+    <label>📱 请输入报名手机号</label>
+    <div class="search-input-wrap">
+      <input type="tel" class="search-input" id="phoneInput" placeholder="例如: 13800138000" maxlength="11">
+      <button class="search-btn" id="searchBtn" onclick="searchPhone()">查询</button>
+    </div>
+  </div>
+  
+  <!-- 结果 -->
+  <div class="result-box" id="resultBox">
+    <div id="resultContent"></div>
+    <div class="reset-link" onclick="resetSearch()">← 查询其他手机号</div>
+  </div>
+  
+  <div class="footer">
+    亲子跑活动组委会 · 签到系统
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== 数据 =====
+const registrations = [
+  {
+    "name": "安柯",
+    "grade": "2015级医院管理",
+    "phone": "18301443350",
+    "childCount": "A.1",
+    "children": [
+      {
+        "raw": "柠檬-男-3岁-105㎝",
+        "gender": "男",
+        "age": "3岁",
+        "height": "105㎝",
+        "name": "柠檬"
+      }
+    ],
+    "remark": "无",
+    "nickname": "吃瓜群众"
+  },
+  {
+    "name": "安學",
+    "grade": "2002軟件工程碩士",
+    "phone": "13632680885",
+    "childCount": "A.1",
+    "children": [
+      {
+        "raw": "Edward-男-14岁-160cm",
+        "gender": "男",
+        "age": "14岁",
+        "height": "160cm",
+        "name": "Edward"
+      }
+    ],
+    "remark": "无",
+    "nickname": "Roland"
+  },
+  {
+    "name": "陈芳",
+    "grade": "2020 年开始在深研院工作",
+    "phone": "13510084071",
+    "childCount": "B.2",
+    "children": [
+      {
+        "raw": "一蔓 11 岁，145",
+        "gender": "未知",
+        "age": "11岁",
+        "height": "145cm",
+        "name": "一蔓"
+      },
+      {
+        "raw": "墨墨 11 岁 150",
+        "gender": "未知",
+        "age": "11岁",
+        "height": "150cm",
+        "name": "墨墨"
+      }
+    ],
+    "remark": "无",
+    "nickname": "陈芳"
+  },
+  {
+    "name": "陈俊",
+    "grade": "1988水利工程",
+    "phone": "13902942749",
+    "childCount": "A.1",
+    "children": [
+      {
+        "raw": "依依——女——9岁——140",
+        "gender": "女",
+        "age": "9岁",
+        "height": "140cm",
+        "name": "依依"
+      }
+    ],
+    "remark": "无",
+    "nickname": "水木骏（陈俊）"
+  },
+  {
+    "name": "陈沫瑶",
+    "grade": "2011 级经管学院硕士",
+    "phone": "13823508910",
+    "childCount": "A.1",
+    "children": [
+      {
+        "raw": "多米-女- 5 岁-115cm",
+        "gender": "女",
+        "age": "5岁",
+        "height": "115cm",
+        "name": "多米"
+      }
+    ],
+    "remark": "无",
+    "nickname": "small "
+  },
+  {
+    "name": "陈其祥",
+    "grade": "2018深研院培训学院EMBA",
+    "phone": "15370996129",
+    "childCount": "B.2",
+    "children": [
+      {
+        "raw": "陈玥-女-7岁-120cm",
+        "gender": "女",
+        "age": "7岁",
+        "height": "120cm",
+        "name": "陈玥"
+      },
+      {
+        "raw": "陈果-男-13岁-160cm",
+        "gender": "男",
+        "age": "13岁",
+        "height": "160cm",
+        "name": "陈果"
+      }
+    ],
+    "remark": "无",
+    "nickname": "陈其祥"
+  },
+  {
+    "name": "陈绮慧",
+    "grade": "2025清华专精特新企业班",
+    "phone": "13760262336",
+    "childCount": "B.2",
+    "children": [
+      {
+        "raw": "城城-男-13岁-145cm，森森-男-10岁-140cm",
+        "gender": "男",
+        "age": "13岁",
+        "height": "145cm",
+        "name": "城城"
+      }
+    ],
+    "remark": "无",
+    "nickname": "Fay Chen"
+  },
+  {
+    "name": "陈晓君",
+    "grade": "2023培训学院",
+    "phone": "18566263832",
+    "childCount": "A.1",
+    "children": [
+      {
+        "raw": "曦曦-女-10岁-150cm",
+        "gender": "女",
+        "age": "10岁",
+        "height": "150cm",
+        "name": "曦曦"
+      }
+    ],
+    "remark": "无",
+    "nickname": "Jarvis.J"
+  },
+  {
+    "name": "程红美",
+    "grade": "2013级材料学院硕士",
+    "phone": "18128857446",
+    "childCount": "A.1",
+    "children": [
+      {
+        "raw": "早早 男 9岁 155",
+        "gender": "男",
+        "age": "9岁",
+        "height": "155cm",
+        "name": "早早 男"
+      }
+    ],
+    "remark": "无",
+    "nickname": "Mg🌸"
+  },
+  {
+    "name": "戴文正",
+    "grade": "2005级精仪系本科",
+    "phone": "18500957620",
+    "childCount": "A.1",
+    "children": [
+      {
+        "raw": "Regene-女-9岁-150cm",
+        "gender": "女",
+        "age": "9岁",
+        "height": "150cm",
+        "name": "Regene"
+      }
+    ],
+    "remark": "忌口桃子，谢谢",
+    "nickname": "VN"
+  },
+  {
+    "name": "邓豪",
+    "grade": "2016精仪博士",
+    "phone": "18823833780",
+    "childCount": "B.2",
+    "children": [
+      {
+        "raw": "甜甜-女-120，涵涵-女-110",
+        "gender": "女",
+        "age": "",
+        "height": "120cm",
+        "name": "甜甜"
+      }
+    ],
+    "remark": "无",
+    "nickname": "DengH"
+  },
+  {
+    "name": "邓豪",
+    "grade": "2016精仪博后",
+    "phone": "13070105608",
+    "childCount": "B.2",
+    "children": [
+      {
+        "raw": "邓包甜-6岁-130cm， 邓包涵-4岁-110cm",
+        "gender": "未知",
+        "age": "6岁",
+        "height": "130cm",
+        "name": "邓包甜"
+      }
+    ],
+    "remark": "牛奶、鸡蛋过敏",
+    "nickname": "Qian"
+  },
+  {
+    "name": "董琼叶",
+    "grade": "2011级自动化系博士",
+    "phone": "18210064605",
+    "childCount": "B.2",
+    "children": [
+      {
+        "raw": "汤圆-女-10岁-145cm",
+        "gender": "女",
+        "age": "10岁",
+        "height": "145cm",
+        "name": "汤圆"
+      },
+      {
+        "raw": "汤包-女-6岁-128cm",
+        "gender": "女",
+        "age": "6岁",
+        "height": "128cm",
+        "name": "汤包"
+      }
+    ],
+    "remark": "衣服需要150和130",
+    "nickname": "Daphne"
+  },
+  {
+    "name": "干林",
+    "grade": "2000级材料学本科",
+    "phone": "18038153360",
+    "childCount": "A.1",
+    "children": [
+      {
+        "raw": "干思成-男-10岁-140cm",
+        "gender": "男",
+        "age": "10岁",
+        "height": "140cm",
+        "name": "干思成"
+      }
+    ],
+    "remark": "无",
+    "nickname": "张少敏"
+  },
+  {
+    "name": "怀千江",
+    "grade": "1992电子系本科",
+    "phone": "13501386057",
+    "childCount": "A.1",
+    "children": [
+      {
+        "raw": "淘淘-男-4岁-120",
+        "gender": "男",
+        "age": "4岁",
+        "height": "120cm",
+        "name": "淘淘"
+      }
+    ],
+    "remark": "没有",
+    "nickname": "怀千江"
+  },
+  {
+    "name": "黄玉",
+    "grade": "\t2102",
+    "phone": "13570872184",
+    "childCount": "C.3",
+    "children": [
+      {
+        "raw": "彬彬-男，11，150厘米",
+        "gender": "男",
+        "age": "",
+        "height": "150厘米",
+        "name": "彬彬"
+      },
+      {
+        "raw": "骁骁 男 7岁 130厘米",
+        "gender": "男",
+        "age": "7岁",
+        "height": "130厘米",
+        "name": "骁骁 男"
+      },
+      {
+        "raw": "小豪 男 8岁 150厘米",
+        "gender": "男",
+        "age": "8岁",
+        "height": "150厘米",
+        "name": "小豪 男"
+      }
+    ],
+    "remark": "无",
+    "nickname": "黄玉"
+  },
+  {
+    "name": "黄玉",
+    "grade": "2102领军人才",
+    "phone": "13510730181",
+    "childCount": "C.3",
+    "children": [
+      {
+        "raw": "小宝  女  9岁 130",
+        "gender": "女",
+        "age": "9岁",
+        "height": "130cm",
+        "name": "小宝 女"
+      },
+      {
+        "raw": "跳跳  女  13岁 165",
+        "gender": "女",
+        "age": "13岁",
+        "height": "165cm",
+        "name": "跳跳 女"
+      },
+      {
+        "raw": "皮皮  男  12岁 165",
+        "gender": "男",
+        "age": "12岁",
+        "height": "165cm",
+        "name": "皮皮 男"
+      }
+    ],
+    "remark": "无",
+    "nickname": "玉子"
+  },
+  {
+    "name": "孔健",
+    "grade": "2019级工商管理硕士",
+    "phone": "13670255767",
+    "childCount": "A.1",
+    "children": [
+      {
+        "raw": "孔小宝-男-8岁-142cm",
+        "gender": "男",
+        "age": "8岁",
+        "height": "142cm",
+        "name": "孔小宝"
+      }
+    ],
+    "remark": "无",
+    "nickname": "༄༊࿆满满阳光ོྂཾ࿆࿐"
+  },
+  {
+    "name": "李翠萍",
+    "grade": "2006级环境学院本科",
+    "phone": "15901030682",
+    "childCount": "A.1",
+    "children": [
+      {
+        "raw": "子玉-女-4岁-110cm",
+        "gender": "女",
+        "age": "4岁",
+        "height": "110cm",
+        "name": "子玉"
+      }
+    ],
+    "remark": "无",
+    "nickname": "李翠萍"
+  },
+  {
+    "name": "李建桦",
+    "grade": "2013级电子系硕士",
+    "phone": "15013701544",
+    "childCount": "B.2",
+    "children": [
+      {
+        "raw": "凤梧-男-8岁-140cm，鸿钜-男-11岁-150cm",
+        "gender": "男",
+        "age": "8岁",
+        "height": "140cm",
+        "name": "凤梧"
+      }
+    ],
+    "remark": "不吃蚕豆",
+    "nickname": "lijh"
+  },
+  {
+    "name": "李鹏",
+    "grade": "2012级法学院硕士",
+    "phone": "18681588148",
+    "childCount": "B.2",
+    "children": [
+      {
+        "raw": "沅宝-男-5岁-110cm",
+        "gender": "男",
+        "age": "5岁",
+        "height": "110cm",
+        "name": "沅宝"
+      },
+      {
+        "raw": "芷晴-女-6岁-115cm",
+        "gender": "女",
+        "age": "6岁",
+        "height": "115cm",
+        "name": "芷晴"
+      }
+    ],
+    "remark": "无忌食",
+    "nickname": "右美沙芬"
+  },
+  {
+    "name": "李向平",
+    "grade": "1999级 经管学院MBA",
+    "phone": "13802553718",
+    "childCount": "A.1",
+    "children": [
+      {
+        "raw": "蓝蓝 女 15岁 165CM",
+        "gender": "女",
+        "age": "15岁",
+        "height": "165CM",
+        "name": "蓝蓝 女"
+      }
+    ],
+    "remark": "无",
+    "nickname": "高飞"
+  },
+  {
+    "name": "李雪",
+    "grade": "2016级清华伯克利学院博士",
+    "phone": "13145859730",
+    "childCount": "B.2",
+    "children": [
+      {
+        "raw": "子川-男-9岁-145cm， 子溪-女-6岁-130cm",
+        "gender": "未知",
+        "age": "9岁",
+        "height": "145cm",
+        "name": "子川"
+      }
+    ],
+    "remark": "无",
+    "nickname": "李雪"
+  },
+  {
+    "name": "李雪",
+    "grade": "2016级清华伯克利学院博士",
+    "phone": "13145859730",
+    "childCount": "B.2",
+    "children": [
+      {
+        "raw": "子川-男-9岁-145cm， 子溪-女-6岁-130cm",
+        "gender": "未知",
+        "age": "9岁",
+        "height": "145cm",
+        "name": "子川"
+      }
+    ],
+    "remark": "无",
+    "nickname": "李雪"
+  },
+  {
+    "name": "李占峰",
+    "grade": "2026专精特新硕士",
+    "phone": "17620357825",
+    "childCount": "B.2",
+    "children": [
+      {
+        "raw": "李彧旗-男-5岁-116cm",
+        "gender": "男",
+        "age": "5岁",
+        "height": "116cm",
+        "name": "李彧旗"
+      },
+      {
+        "raw": "李彧墨-男-8岁-133cm",
+        "gender": "男",
+        "age": "8岁",
+        "height": "133cm",
+        "name": "李彧墨"
+      }
+    ],
+    "remark": "暂无",
+    "nickname": "Zephyr总钻风"
+  },
+  {
+    "name": "李占峰",
+    "grade": "2025专精特新",
+    "phone": "17620357825",
+    "childCount": "B.2",
+    "children": [
+      {
+        "raw": "李彧旗-男-5岁-116cm",
+        "gender": "男",
+        "age": "5岁",
+        "height": "116cm",
+        "name": "李彧旗"
+      },
+      {
+        "raw": "李彧墨-男-8岁-133cm",
+        "gender": "男",
+        "age": "8岁",
+        "height": "133cm",
+        "name": "李彧墨"
+      }
+    ],
+    "remark": "暂无",
+    "nickname": "Zephyr总钻风"
+  },
+  {
+    "name": "梁延荣",
+    "grade": "2018深研院",
+    "phone": "13924640869",
+    "childCount": "B.2",
+    "children": [
+      {
+        "raw": "梁欣衡-女-8岁-125cm，梁欣阳-女-8岁-125cm",
+        "gender": "女",
+        "age": "8岁",
+        "height": "125cm",
+        "name": "梁欣衡"
+      }
+    ],
+    "remark": "无",
+    "nickname": "梁延荣（雪域高原）"
+  },
+  {
+    "name": "刘婷",
+    "grade": "2018级材料学院硕士",
+    "phone": "15813848882",
+    "childCount": "A.1",
+    "children": [
+      {
+        "raw": "刘璟杨-男-11岁-160",
+        "gender": "男",
+        "age": "11岁",
+        "height": "160cm",
+        "name": "刘璟杨"
+      }
+    ],
+    "remark": "无",
+    "nickname": "ོ.Ting"
+  },
+  {
+    "name": "柳晓欢",
+    "grade": "2019级机械工程系硕士",
+    "phone": "13662606780",
+    "childCount": "B.2",
+    "children": [
+      {
+        "raw": "转转-女-8岁-130cm",
+        "gender": "女",
+        "age": "8岁",
+        "height": "130cm",
+        "name": "转转"
+      },
+      {
+        "raw": "酱酱-女-2岁-110cm",
+        "gender": "女",
+        "age": "2岁",
+        "height": "110cm",
+        "name": "酱酱"
+      }
+    ],
+    "remark": "无",
+    "nickname": "😈"
+  },
+  {
+    "name": "吕伟",
+    "grade": "2025级能源与环境学院老师",
+    "phone": "18682157360",
+    "childCount": "B.2",
+    "children": [
+      {
+        "raw": "小恬-女-10岁-150cm（比较胖，160的比较合适）",
+        "gender": "女",
+        "age": "10岁",
+        "height": "150cm",
+        "name": "小恬"
+      },
+      {
+        "raw": "沐冉-女-9岁-140cm",
+        "gender": "女",
+        "age": "9岁",
+        "height": "140cm",
+        "name": "沐冉"
+      }
+    ],
+    "remark": "无",
+    "nickname": "Scarlet"
+  },
+  {
+    "name": "马俊豪",
+    "grade": "2018级经管学院FMBA",
+    "phone": "13632647919",
+    "childCount": "A.1",
+    "children": [
+      {
+        "raw": "马子骞-男-9岁-150cm",
+        "gender": "男",
+        "age": "9岁",
+        "height": "150cm",
+        "name": "马子骞"
+      }
+    ],
+    "remark": "无",
+    "nickname": "俊豪Marco"
+  },
+  {
+    "name": "面积费",
+    "grade": "2008级精密仪器硕士",
+    "phone": "18682120253",
+    "childCount": "C.3",
+    "children": [
+      {
+        "raw": "牛牛-男-11岁-150",
+        "gender": "男",
+        "age": "11岁",
+        "height": "150cm",
+        "name": "牛牛"
+      },
+      {
+        "raw": "乔治-男-8岁-130",
+        "gender": "男",
+        "age": "8岁",
+        "height": "130cm",
+        "name": "乔治"
+      },
+      {
+        "raw": "齐齐-男-2岁半-100",
+        "gender": "男",
+        "age": "2岁",
+        "height": "100cm",
+        "name": "齐齐"
+      }
+    ],
+    "remark": "无",
+    "nickname": "李秀美"
+  },
+  {
+    "name": "彭志永教授",
+    "grade": "2018级医学院博士",
+    "phone": "13316800903",
+    "childCount": "A.1",
+    "children": [
+      {
+        "raw": "思齐-女-13岁-153cm",
+        "gender": "女",
+        "age": "13岁",
+        "height": "153cm",
+        "name": "思齐"
+      }
+    ],
+    "remark": "🈚",
+    "nickname": "彭经理青藤军团孔雀团队青年科学家"
+  },
+  {
+    "name": "司知蠢",
+    "grade": "材博07",
+    "phone": "15012660912",
+    "childCount": "B.2",
+    "children": [
+      {
+        "raw": "司珈睿，男，8岁，140cm；",
+        "gender": "男",
+        "age": "8岁",
+        "height": "140cm",
+        "name": "司珈睿"
+      },
+      {
+        "raw": "司珈烨，男，14岁，175cm；",
+        "gender": "男",
+        "age": "14岁",
+        "height": "175cm",
+        "name": "司珈烨"
+      }
+    ],
+    "remark": "无",
+    "nickname": "司知蠢"
+  },
+  {
+    "name": "司知蠢",
+    "grade": "能源环境老师",
+    "phone": "15002098089",
+    "childCount": "B.2",
+    "children": [
+      {
+        "raw": "珈睿-男-8岁-130cm，珈烨-男-14岁-175cm",
+        "gender": "男",
+        "age": "8岁",
+        "height": "130cm",
+        "name": "珈睿"
+      }
+    ],
+    "remark": "无",
+    "nickname": "lilei "
+  },
+  {
+    "name": "宋孟贵",
+    "grade": "2004级美术学院本",
+    "phone": "15989494999",
+    "childCount": "B.2",
+    "children": [
+      {
+        "raw": "涵涵-男-6岁-125",
+        "gender": "男",
+        "age": "6岁",
+        "height": "125cm",
+        "name": "涵涵"
+      },
+      {
+        "raw": "瑞瑞-男-8岁-135",
+        "gender": "男",
+        "age": "8岁",
+        "height": "135cm",
+        "name": "瑞瑞"
+      }
+    ],
+    "remark": "无",
+    "nickname": "宋孟贵"
+  },
+  {
+    "name": "宋孟贵",
+    "grade": "2004级美术学院本",
+    "phone": "15989494999",
+    "childCount": "B.2",
+    "children": [
+      {
+        "raw": "涵涵-男-6岁-125",
+        "gender": "男",
+        "age": "6岁",
+        "height": "125cm",
+        "name": "涵涵"
+      },
+      {
+        "raw": "瑞瑞-男-8岁-135",
+        "gender": "男",
+        "age": "8岁",
+        "height": "135cm",
+        "name": "瑞瑞"
+      }
+    ],
+    "remark": "无",
+    "nickname": "宋孟贵"
+  },
+  {
+    "name": "苏国鑫",
+    "grade": "2017级公共管理学院硕士",
+    "phone": "13923833623",
+    "childCount": "B.2",
+    "children": [
+      {
+        "raw": "恺恺-男-13岁，168 cm；恩恩-女-9岁-150cm",
+        "gender": "未知",
+        "age": "13岁",
+        "height": "168cm",
+        "name": "恺恺"
+      }
+    ],
+    "remark": "无。",
+    "nickname": "蘇國🇨🇳"
+  },
+  {
+    "name": "苏萍",
+    "grade": "2001级精仪系本科",
+    "phone": "13570831020",
+    "childCount": "B.2",
+    "children": [
+      {
+        "raw": "雨菲-女-11岁-145cm",
+        "gender": "女",
+        "age": "11岁",
+        "height": "145cm",
+        "name": "雨菲"
+      }
+    ],
+    "remark": "无",
+    "nickname": "苏萍"
+  },
+  {
+    "name": "孙华锐",
+    "grade": "2002级热能系学士",
+    "phone": "17704020047",
+    "childCount": "A.1",
+    "children": [
+      {
+        "raw": "奥莉-10岁-160cm",
+        "gender": "未知",
+        "age": "10岁",
+        "height": "160cm",
+        "name": "奥莉"
+      }
+    ],
+    "remark": "无",
+    "nickname": "孙华锐"
+  },
+  {
+    "name": "唐铭",
+    "grade": "2018级机械工程系硕士",
+    "phone": "18665306081",
+    "childCount": "A.1",
+    "children": [
+      {
+        "raw": "加加 女 11岁 160cm",
+        "gender": "女",
+        "age": "11岁",
+        "height": "160cm",
+        "name": "加加 女"
+      }
+    ],
+    "remark": "无",
+    "nickname": "ming"
+  },
+  {
+    "name": "唐铭",
+    "grade": "2018级机械工程学院硕士",
+    "phone": "18665306081",
+    "childCount": "A.1",
+    "children": [
+      {
+        "raw": "加加 女 11岁 160cm",
+        "gender": "女",
+        "age": "11岁",
+        "height": "160cm",
+        "name": "加加 女"
+      }
+    ],
+    "remark": "无",
+    "nickname": "ming"
+  },
+  {
+    "name": "唐铭",
+    "grade": "2018级机械工程学院硕士",
+    "phone": "18665306081",
+    "childCount": "B.2",
+    "children": [
+      {
+        "raw": "加加 女 11岁 160cm",
+        "gender": "女",
+        "age": "11岁",
+        "height": "160cm",
+        "name": "加加 女"
+      }
+    ],
+    "remark": "无",
+    "nickname": "ming"
+  },
+  {
+    "name": "涂建安",
+    "grade": "2019级机械工程系硕士",
+    "phone": "13728793605",
+    "childCount": "B.2",
+    "children": [
+      {
+        "raw": "涂莞茹-女-7岁-120cm",
+        "gender": "女",
+        "age": "7岁",
+        "height": "120cm",
+        "name": "涂莞茹"
+      },
+      {
+        "raw": "涂若骞-女-13岁-155cm",
+        "gender": "女",
+        "age": "13岁",
+        "height": "155cm",
+        "name": "涂若骞"
+      }
+    ],
+    "remark": "无",
+    "nickname": "Jan Tu"
+  },
+  {
+    "name": "王思宇",
+    "grade": "2023工商",
+    "phone": "13560757565",
+    "childCount": "A.1",
+    "children": [
+      {
+        "raw": "王心如  女  13岁 159cm",
+        "gender": "女",
+        "age": "13岁",
+        "height": "159cm",
+        "name": "王心如 女"
+      }
+    ],
+    "remark": "无",
+    "nickname": "王思宇"
+  },
+  {
+    "name": "韦天贵",
+    "grade": "2016清华深研EMBA",
+    "phone": "15013826160",
+    "childCount": "A.1",
+    "children": [
+      {
+        "raw": "晗晗—女—6岁—120cm",
+        "gender": "女",
+        "age": "6岁",
+        "height": "120cm",
+        "name": "晗晗"
+      }
+    ],
+    "remark": "无",
+    "nickname": "开拓者"
+  },
+  {
+    "name": "吴夏阳",
+    "grade": "2007级继教学院硕士",
+    "phone": "15112566728",
+    "childCount": "C.3",
+    "children": [
+      {
+        "raw": "hank  150cm",
+        "gender": "未知",
+        "age": "",
+        "height": "150cm",
+        "name": "hank"
+      },
+      {
+        "raw": "Quentin  140cm",
+        "gender": "未知",
+        "age": "",
+        "height": "140cm",
+        "name": "Quentin"
+      },
+      {
+        "raw": "Yvonne 110cm",
+        "gender": "未知",
+        "age": "",
+        "height": "110cm",
+        "name": "Yvonne"
+      }
+    ],
+    "remark": "无",
+    "nickname": "Ryan吴昊阳 @星奢智能"
+  },
+  {
+    "name": "徐健江",
+    "grade": "2026专精特新班",
+    "phone": "13824352877",
+    "childCount": "A.1",
+    "children": [
+      {
+        "raw": "扬扬-男-5岁-110",
+        "gender": "男",
+        "age": "5岁",
+        "height": "110cm",
+        "name": "扬扬"
+      }
+    ],
+    "remark": "无",
+    "nickname": "徐健江"
+  },
+  {
+    "name": "徐梦玲",
+    "grade": "教职工",
+    "phone": "13530708295",
+    "childCount": "A.1",
+    "children": [
+      {
+        "raw": "小团-男-9岁-155",
+        "gender": "男",
+        "age": "9岁",
+        "height": "155cm",
+        "name": "小团"
+      }
+    ],
+    "remark": "无",
+    "nickname": "Dream "
+  },
+  {
+    "name": "许超",
+    "grade": "2009级机械学院博士",
+    "phone": "18676749668",
+    "childCount": "B.2",
+    "children": [
+      {
+        "raw": "许殊伦—男—9岁—140cm",
+        "gender": "男",
+        "age": "9岁",
+        "height": "140cm",
+        "name": "许殊伦"
+      },
+      {
+        "raw": "许逸晨—男—11岁—150cm",
+        "gender": "男",
+        "age": "11岁",
+        "height": "150cm",
+        "name": "许逸晨"
+      }
+    ],
+    "remark": "无",
+    "nickname": "婷婷"
+  },
+  {
+    "name": "许能",
+    "grade": "24级工程管理硕士",
+    "phone": "18664969078",
+    "childCount": "A.1",
+    "children": [
+      {
+        "raw": "许靖宜-女-8岁-130cm",
+        "gender": "女",
+        "age": "8岁",
+        "height": "130cm",
+        "name": "许靖宜"
+      }
+    ],
+    "remark": "无",
+    "nickname": "许能"
+  },
+  {
+    "name": "杨瑞东",
+    "grade": "1986机械",
+    "phone": "18038153000",
+    "childCount": "A.1",
+    "children": [
+      {
+        "raw": "蓬蓬-7岁-130cm",
+        "gender": "未知",
+        "age": "7岁",
+        "height": "130cm",
+        "name": "蓬蓬"
+      }
+    ],
+    "remark": "无",
+    "nickname": "杨瑞东"
+  },
+  {
+    "name": "叶敏华",
+    "grade": "2006级环境学院本科，2010级环境学院硕士",
+    "phone": "18503036128",
+    "childCount": "B.2",
+    "children": [
+      {
+        "raw": "墨青-女-9岁-160cm，墨阳-男-4岁-120cm",
+        "gender": "未知",
+        "age": "9岁",
+        "height": "160cm",
+        "name": "墨青"
+      }
+    ],
+    "remark": "无",
+    "nickname": "hermionemin"
+  },
+  {
+    "name": "尹丽丹",
+    "grade": "2011环境学院本科，2015环境学院硕士",
+    "phone": "18511344270",
+    "childCount": "A.1",
+    "children": [
+      {
+        "raw": "伊伊-4岁-110cm",
+        "gender": "未知",
+        "age": "4岁",
+        "height": "110cm",
+        "name": "伊伊"
+      }
+    ],
+    "remark": "无",
+    "nickname": "尹丽丹11"
+  },
+  {
+    "name": "余驹",
+    "grade": "2008级经管学院本科",
+    "phone": "17727816691",
+    "childCount": "A.1",
+    "children": [
+      {
+        "raw": "Cindy-女-140cm",
+        "gender": "女",
+        "age": "",
+        "height": "140cm",
+        "name": "Cindy"
+      }
+    ],
+    "remark": "无",
+    "nickname": "余驹"
+  },
+  {
+    "name": "袁诗雅",
+    "grade": "2020机械",
+    "phone": "13510932265",
+    "childCount": "B.2",
+    "children": [
+      {
+        "raw": "希希-5岁-110cm 萌萌-11岁-155cm",
+        "gender": "未知",
+        "age": "5岁",
+        "height": "110cm",
+        "name": "希希"
+      }
+    ],
+    "remark": "无",
+    "nickname": "TT"
+  },
+  {
+    "name": "翟立刚",
+    "grade": "2000年-2004年A类注册旁听生精仪系",
+    "phone": "13058199003",
+    "childCount": "A.1",
+    "children": [
+      {
+        "raw": "翟子墨-6岁-123cm",
+        "gender": "未知",
+        "age": "6岁",
+        "height": "123cm",
+        "name": "翟子墨"
+      }
+    ],
+    "remark": "无",
+    "nickname": "130****9003"
+  },
+  {
+    "name": "张斌",
+    "grade": "2006级机械系硕士",
+    "phone": "15012894405",
+    "childCount": "A.1",
+    "children": [
+      {
+        "raw": "棠棠-女-8岁-137cm",
+        "gender": "女",
+        "age": "8岁",
+        "height": "137cm",
+        "name": "棠棠"
+      }
+    ],
+    "remark": "无",
+    "nickname": "苏萍"
+  },
+  {
+    "name": "张捷",
+    "grade": "深圳校友会前工作人员",
+    "phone": "18038153399",
+    "childCount": "B.2",
+    "children": [
+      {
+        "raw": "豆子-7岁-125cm；芝麻-4岁-110cm",
+        "gender": "未知",
+        "age": "7岁",
+        "height": "125cm",
+        "name": "豆子"
+      }
+    ],
+    "remark": "无",
+    "nickname": "张捷"
+  },
+  {
+    "name": "张楠熙",
+    "grade": "2020经管学院会计硕士",
+    "phone": "13823368896",
+    "childCount": "A.1",
+    "children": [
+      {
+        "raw": "楠熙-男-8岁-140cm",
+        "gender": "男",
+        "age": "8岁",
+        "height": "140cm",
+        "name": "楠熙"
+      }
+    ],
+    "remark": "无",
+    "nickname": "金鑫"
+  },
+  {
+    "name": "张翔",
+    "grade": "2006级经管学院本科",
+    "phone": "18813980250",
+    "childCount": "B.2",
+    "children": [
+      {
+        "raw": "云舒-女-10岁-150cm",
+        "gender": "女",
+        "age": "10岁",
+        "height": "150cm",
+        "name": "云舒"
+      },
+      {
+        "raw": "云兮-女-7岁-130cm",
+        "gender": "女",
+        "age": "7岁",
+        "height": "130cm",
+        "name": "云兮"
+      }
+    ],
+    "remark": "无",
+    "nickname": "张翔Lucas"
+  },
+  {
+    "name": "张正锋",
+    "grade": "2018工商管理",
+    "phone": "13510075643",
+    "childCount": "B.2",
+    "children": [
+      {
+        "raw": "嘉颖-10岁-140",
+        "gender": "未知",
+        "age": "10岁",
+        "height": "140cm",
+        "name": "嘉颖"
+      },
+      {
+        "raw": "雨涵-9岁-130",
+        "gender": "未知",
+        "age": "9岁",
+        "height": "130cm",
+        "name": "雨涵"
+      }
+    ],
+    "remark": "暂无",
+    "nickname": "80年代"
+  },
+  {
+    "name": "赵少华",
+    "grade": "2013经管硕士",
+    "phone": "18938958176",
+    "childCount": "A.1",
+    "children": [
+      {
+        "raw": "赵琳-女-13岁-160cm",
+        "gender": "女",
+        "age": "13岁",
+        "height": "160cm",
+        "name": "赵琳"
+      }
+    ],
+    "remark": "无",
+    "nickname": "Z "
+  },
+  {
+    "name": "赵艳花",
+    "grade": "2023级培训学院",
+    "phone": "18588223255",
+    "childCount": "A.1",
+    "children": [
+      {
+        "raw": "曦曦-女-9岁-148cm",
+        "gender": "女",
+        "age": "9岁",
+        "height": "148cm",
+        "name": "曦曦"
+      }
+    ],
+    "remark": "无",
+    "nickname": "Lucky"
+  },
+  {
+    "name": "郑建友",
+    "grade": "国际院",
+    "phone": "18038153150",
+    "childCount": "A.1",
+    "children": [
+      {
+        "raw": "蓝牛男10岁150㎝",
+        "gender": "男",
+        "age": "10岁",
+        "height": "150㎝",
+        "name": "蓝牛男"
+      }
+    ],
+    "remark": "无",
+    "nickname": "钧元"
+  }
+];
+
+// ===== 状态管理 =====
+function getStorageKey() { return 'parent_run_2025_received'; }
+
+function getReceivedState() {
+  try {
+    return JSON.parse(localStorage.getItem(getStorageKey()) || '{}');
+  } catch { return {}; }
+}
+
+function setChildReceived(phone, childIndex, received) {
+  const state = getReceivedState();
+  if (!state[phone]) state[phone] = {};
+  state[phone][childIndex] = received;
+  localStorage.setItem(getStorageKey(), JSON.stringify(state));
+  updateStats();
+}
+
+function isChildReceived(phone, childIndex) {
+  const state = getReceivedState();
+  return state[phone] && state[phone][childIndex] === true;
+}
+
+// ===== 统计 =====
+function updateStats() {
+  let totalKids = 0;
+  let receivedKids = 0;
+  const state = getReceivedState();
+  
+  registrations.forEach(reg => {
+    totalKids += reg.children.length;
+    if (state[reg.phone]) {
+      reg.children.forEach((_, idx) => {
+        if (state[reg.phone][idx]) receivedKids++;
+      });
+    }
+  });
+  
+  document.getElementById('statTotal').textContent = registrations.length;
+  document.getElementById('statKids').textContent = totalKids;
+  document.getElementById('statReceived').textContent = receivedKids;
+}
+
+// ===== 搜索 =====
+function searchPhone() {
+  const input = document.getElementById('phoneInput');
+  const phone = input.value.trim();
+  
+  if (!phone) {
+    showToast('请输入手机号');
+    return;
+  }
+  if (!/^\d{11}$/.test(phone)) {
+    showToast('请输入11位手机号');
+    return;
+  }
+  
+  const reg = registrations.find(r => r.phone === phone);
+  if (!reg) {
+    showToast('未找到该手机号的报名信息');
+    return;
+  }
+  
+  renderResult(reg);
+}
+
+function renderResult(reg) {
+  const resultBox = document.getElementById('resultBox');
+  const content = document.getElementById('resultContent');
+  
+  let childrenHtml = '';
+  reg.children.forEach((child, idx) => {
+    const received = isChildReceived(reg.phone, idx);
+    const genderClass = child.gender === '男' ? 'boy' : (child.gender === '女' ? 'girl' : 'unknown');
+    const genderEmoji = child.gender === '男' ? '👦' : (child.gender === '女' ? '👧' : '👶');
+    const btnText = received ? '✓ 已领取衣服' : '👕 点击领取衣服';
+    const btnClass = received ? 'received' : '';
+    const cardClass = received ? 'received' : '';
+    
+    childrenHtml += `
+      <div class="child-card {cardClass}" id="childCard_{idx}">
+        <div class="child-header">
+          <div class="child-avatar {genderClass}">{genderEmoji}</div>
+          <div>
+            <div class="child-name">{child.name}</div>
+            <div class="child-raw">{child.raw}</div>
+          </div>
+        </div>
+        <div class="child-details">
+          <div class="detail-item">
+            <div class="label">性别</div>
+            <div class="value">{child.gender}</div>
+          </div>
+          <div class="detail-item">
+            <div class="label">年龄</div>
+            <div class="value">{child.age || '-'}</div>
+          </div>
+          <div class="detail-item">
+            <div class="label">身高/尺码</div>
+            <div class="value size">{child.height || '-'}</div>
+          </div>
+        </div>
+        <button class="receive-btn {btnClass}" id="btn_{idx}" onclick="toggleReceive('{reg.phone}', {idx})">
+          {btnText}
+        </button>
+      </div>
+    `;
+  });
+  
+  content.innerHTML = `
+    <div class="parent-info">
+      <h2>👤 {reg.name}</h2>
+      <div class="parent-meta">
+        <span>📱 {reg.phone}</span>
+        <span>🎓 {reg.grade}</span>
+        <span>👶 {reg.children.length}个孩子</span>
+        {reg.remark && reg.remark !== '无' ? '<span>📝 ' + reg.remark + '</span>' : ''}
+      </div>
+    </div>
+    <div class="children-list">
+      {childrenHtml}
+    </div>
+  `;
+  
+  resultBox.classList.add('show');
+  document.querySelector('.search-box').style.display = 'none';
+}
+
+function toggleReceive(phone, childIndex) {
+  const received = isChildReceived(phone, childIndex);
+  if (received) {
+    // 已领取，询问是否取消
+    if (!confirm('该孩子已标记为领取，是否取消？')) return;
+    setChildReceived(phone, childIndex, false);
+  } else {
+    setChildReceived(phone, childIndex, true);
+    showToast('✓ 领取成功！');
+  }
+  
+  // 重新渲染该卡片状态
+  refreshCard(phone, childIndex);
+}
+
+function refreshCard(phone, childIndex) {
+  const reg = registrations.find(r => r.phone === phone);
+  if (!reg) return;
+  const child = reg.children[childIndex];
+  const received = isChildReceived(phone, childIndex);
+  
+  const card = document.getElementById('childCard_' + childIndex);
+  const btn = document.getElementById('btn_' + childIndex);
+  
+  if (received) {
+    card.classList.add('received');
+    btn.classList.add('received');
+    btn.textContent = '✓ 已领取衣服';
+  } else {
+    card.classList.remove('received');
+    btn.classList.remove('received');
+    btn.textContent = '👕 点击领取衣服';
+  }
+}
+
+function resetSearch() {
+  document.getElementById('resultBox').classList.remove('show');
+  document.querySelector('.search-box').style.display = 'block';
+  document.getElementById('phoneInput').value = '';
+  document.getElementById('phoneInput').focus();
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+// ===== 初始化 =====
+document.getElementById('phoneInput').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') searchPhone();
+});
+
+updateStats();
+</script>
+</body>
+</html>
