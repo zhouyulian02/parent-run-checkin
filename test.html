@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>测试手机号匹配</title>
+</head>
+<body>
+<h1>测试手机号匹配</h1>
+<input type="text" id="phone" placeholder="输入手机号" value="18301443350">
+<button onclick="test()">测试</button>
+<pre id="result"></pre>
+
+<script>
+const registrations = [
+  {"name":"安柯","phone":"18301443350"},
+  {"name":"陈芳","phone":"13510084071"}
+];
+
+function test() {
+  const phone = document.getElementById('phone').value.trim();
+  const result = document.getElementById('result');
+  
+  result.textContent = '输入: [' + phone + ']' + '\n' +
+    '长度: ' + phone.length + '\n' +
+    '类型: ' + typeof phone + '\n' +
+    '数据0.phone: [' + registrations[0].phone + ']' + '\n' +
+    '数据0.phone类型: ' + typeof registrations[0].phone + '\n' +
+    '严格相等(===): ' + (phone === registrations[0].phone) + '\n' +
+    '宽松相等(==): ' + (phone == registrations[0].phone) + '\n';
+    
+  const found = registrations.find(r => r.phone === phone);
+  result.textContent += '查找结果: ' + (found ? found.name : '未找到');
+}
+
+// 自动测试
+test();
+</script>
+</body>
+</html>
